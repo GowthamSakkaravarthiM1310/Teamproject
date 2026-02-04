@@ -11,7 +11,7 @@ const BloodBank = ({ bloodStock }) => {
 
     const getStatusColor = (status) => {
         if (status === 'Out of Stock') return '#ff4d4d'; // Red
-        if (status === 'Low') return '#ffa500'; // Orange
+        if (status === 'Low') return '#ffff00'; // Pure Yellow
         return '#4ade80'; // Green
     };
 
