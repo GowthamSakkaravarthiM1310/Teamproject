@@ -50,8 +50,12 @@ const Request = ({ bloodStock, onRequest }) => {
         }
 
         // Proceed with request
+        // Proceed with request
         if (onRequest) {
-            onRequest(requestedGroup, requestedUnits);
+            onRequest({
+                ...requestData,
+                units: requestedUnits
+            });
         }
 
         setMessage('Blood request submitted successfully');
