@@ -4,20 +4,37 @@ import { Link, useNavigate } from 'react-router-dom';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Login attempt:', { email, password });
-        // Add actual login logic here
-        navigate('/home');
+        setError('');
+
+        if (isAdmin) {
+            if (email === 'admin@gmail.com' && password === '12345678') {
+                localStorage.setItem('userRole', 'admin');
+                navigate('/home');
+            } else {
+                setError('Invalid Admin Credentials');
+            }
+        } else {
+            // Simulated User Login
+            console.log('User Login:', { email, password });
+            localStorage.setItem('userRole', 'user');
+            navigate('/home');
+        }
     };
 
     return (
         <div className="auth-container">
             <div className="glass-card">
-                <h2>Welcome Back</h2>
-                <p className="subtitle">Sign in to continue</p>
+                <h2>{isAdmin ? 'Admin Login' : 'Welcome Back'}</h2>
+                <p className="subtitle">{isAdmin ? 'Enter admin credentials' : 'Sign in to continue'}</p>
+
+                {error && <div className="error-message" style={{ color: '#ff6b6b', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
+
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label htmlFor="email">Email</label>
@@ -44,7 +61,19 @@ const Login = () => {
                     <button type="submit" className="auth-btn">Sign In</button>
                 </form>
                 <p className="footer-text">
-                    Don't have an account? <Link to="/signup">Sign Up</Link>
+                    {isAdmin ? (
+                        <span onClick={() => setIsAdmin(false)} style={{ cursor: 'pointer', color: '#fff', textDecoration: 'underline' }}>
+                            Back to User Login
+                        </span>
+                    ) : (
+                        <>
+                            Don't have an account? <Link to="/signup">Sign Up</Link>
+                            <br />
+                            <span onClick={() => setIsAdmin(true)} style={{ cursor: 'pointer', display: 'block', marginTop: '10px', opacity: 0.8 }}>
+                                Login as Admin
+                            </span>
+                        </>
+                    )}
                 </p>
             </div>
         </div>
