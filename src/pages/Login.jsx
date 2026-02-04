@@ -6,11 +6,29 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login attempt:', { email, password });
-        // Add actual login logic here
-        navigate('/home');
+        try {
+            const response = await fetch('http://localhost:8080/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
+                // navigate('/home', { state: { user: data } }); 
+                navigate('/home');
+            } else {
+                alert('Invalid email or password');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('Login failed. Please try again.');
+        }
     };
 
     return (

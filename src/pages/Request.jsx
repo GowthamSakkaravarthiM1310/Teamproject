@@ -12,6 +12,8 @@ const Request = ({ bloodStock, onRequest }) => {
 
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+    const [showModal, setShowModal] = useState(false);
+    const [pendingRequest, setPendingRequest] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,7 +23,50 @@ const Request = ({ bloodStock, onRequest }) => {
         }));
     };
 
-    const handleRequestSubmit = (e) => {
+    const submitToBackend = async (data) => {
+        try {
+            const response = await fetch('http://localhost:8080/api/requests/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: data.patientName,
+                    bloodGroup: data.bloodGroup,
+                    units: Number(data.units),
+                    phone: data.contactNumber,
+                    address: data.hospitalName,
+                    status: 'PENDING'
+                }),
+            });
+
+            if (response.ok) {
+                if (onRequest) {
+                    onRequest(data.bloodGroup, Number(data.units));
+                }
+                setMessage('Blood request submitted successfully');
+                setMessageType('success');
+
+                // Reset form
+                setRequestData({
+                    patientName: '',
+                    bloodGroup: '',
+                    units: '',
+                    hospitalName: '',
+                    contactNumber: ''
+                });
+            } else {
+                setMessage('Failed to submit request');
+                setMessageType('error');
+            }
+        } catch (error) {
+            console.error('Error submitting request:', error);
+            setMessage('Network error. Please try again.');
+            setMessageType('error');
+        }
+    };
+
+    const handleRequestSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
 
@@ -32,39 +77,50 @@ const Request = ({ bloodStock, onRequest }) => {
         const stockItem = bloodStock.find(item => item.group === requestedGroup);
 
         if (!stockItem) {
-            setMessage('Blood group not available');
+            setMessage('Blood group not available in stock registry');
             setMessageType('error');
             return;
         }
 
         if (stockItem.units === 0) {
-            setMessage('Blood group not available (Out of Stock)');
+            setMessage('Blood group Out of Stock (0 Available)');
             setMessageType('error');
             return;
         }
 
         if (requestedUnits > stockItem.units) {
-            setMessage('Insufficient blood units');
-            setMessageType('error');
+            setPendingRequest({
+                ...requestData,
+                availableUnits: stockItem.units,
+                requested: requestedUnits
+            });
+            setShowModal(true);
             return;
         }
 
-        // Proceed with request
-        if (onRequest) {
-            onRequest(requestedGroup, requestedUnits);
-        }
+        // Available, proceed
+        await submitToBackend(requestData);
+    };
 
-        setMessage('Blood request submitted successfully');
-        setMessageType('success');
+    const confirmInsufficientRequest = async () => {
+        if (!pendingRequest) return;
 
-        // Reset form
-        setRequestData({
-            patientName: '',
-            bloodGroup: '',
-            units: '',
-            hospitalName: '',
-            contactNumber: ''
-        });
+        // Use available units
+        const updatedData = {
+            ...pendingRequest,
+            units: pendingRequest.availableUnits
+        };
+
+        setShowModal(false);
+        setPendingRequest(null);
+        await submitToBackend(updatedData);
+    };
+
+    const cancelRequest = () => {
+        setShowModal(false);
+        setPendingRequest(null);
+        setMessage('Request cancelled due to insufficient stock');
+        setMessageType('error');
     };
 
     return (
@@ -168,6 +224,46 @@ const Request = ({ bloodStock, onRequest }) => {
                     </form>
                 </div>
             </div>
+
+            {/* Modal for Insufficient Stock */}
+            {showModal && pendingRequest && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(0,0,0,0.8)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1100
+                }}>
+                    <div className="glass-card" style={{ maxWidth: '400px', background: '#2b0505', border: '2px solid #ff4d4d' }}>
+                        <h3 style={{ color: '#ff4d4d', marginTop: 0 }}>Insufficient Stock</h3>
+                        <p style={{ marginBottom: '20px' }}>
+                            You requested <strong>{pendingRequest.requested}</strong> units. <br />
+                            Only <strong>{pendingRequest.availableUnits}</strong> units of {pendingRequest.bloodGroup} are available.
+                            <br /><br />
+                            Do you want to proceed with <strong>{pendingRequest.availableUnits} units</strong>?
+                        </p>
+                        <div style={{ display: 'flex', gap: '15px', width: '100%' }}>
+                            <button
+                                onClick={confirmInsufficientRequest}
+                                className="auth-btn"
+                                style={{ background: '#4ade80', color: 'black' }}>
+                                OK ({pendingRequest.availableUnits} Units)
+                            </button>
+                            <button
+                                onClick={cancelRequest}
+                                className="auth-btn"
+                                style={{ background: 'transparent', border: '1px solid white', color: 'white' }}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

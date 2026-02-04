@@ -30,7 +30,7 @@ const Donor = ({ onDonate }) => {
         return differenceInTime / (1000 * 3600 * 24);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
 
@@ -56,23 +56,48 @@ const Donor = ({ onDonate }) => {
             }
         }
 
-        // If all validations pass
-        if (onDonate) {
-            onDonate(formData);
+        // If all validations pass, send to backend
+        try {
+            const response = await fetch('http://localhost:8080/api/donors/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    fullName: formData.fullName,
+                    age: Number(formData.age),
+                    bloodGroup: formData.bloodGroup,
+                    weight: Number(formData.weight),
+                    lastDonationDate: formData.lastDonationDate ? formData.lastDonationDate : null,
+                    phone: formData.phone
+                }),
+            });
+
+            if (response.ok) {
+                if (onDonate) {
+                    onDonate(formData);
+                }
+                setMessage('Donor registered successfully');
+                setMessageType('success');
+
+                // Reset form
+                setFormData({
+                    fullName: '',
+                    age: '',
+                    bloodGroup: '',
+                    weight: '',
+                    lastDonationDate: '',
+                    phone: ''
+                });
+            } else {
+                setMessage('Donor registration failed');
+                setMessageType('error');
+            }
+        } catch (error) {
+            console.error('Error submitting donor registration:', error);
+            setMessage('Network error. Please try again.');
+            setMessageType('error');
         }
-
-        setMessage('Donor registered successfully');
-        setMessageType('success');
-
-        // Reset form (optional)
-        setFormData({
-            fullName: '',
-            age: '',
-            bloodGroup: '',
-            weight: '',
-            lastDonationDate: '',
-            phone: ''
-        });
     };
 
     return (

@@ -7,13 +7,28 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Signup attempt:', { name, email, password });
-        // Add actual signup logic here
+        try {
+            const response = await fetch('http://localhost:8080/api/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
 
-        // Redirect to login page
-        navigate('/login');
+            if (response.ok) {
+                alert('Signup successful!');
+                navigate('/login');
+            } else {
+                const errorText = await response.text();
+                alert('Signup failed: ' + errorText);
+            }
+        } catch (error) {
+            console.error('Error during signup:', error);
+            alert('Signup failed. Please try again.');
+        }
     };
 
     return (
