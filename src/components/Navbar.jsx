@@ -16,7 +16,7 @@ const Navbar = () => {
                 <Link to="/home" className="nav-btn">Home</Link>
                 <button className="nav-btn">Donor</button>
                 <button className="nav-btn">Blood Bank</button>
-                <button className="nav-btn">Request</button>
+                <button className="nav-btn" onClick={() => navigate('/request')}>Request</button>
                 <button className="nav-btn signout-btn" onClick={handleSignOut}>Sign Out</button>
             </div>
         </nav>

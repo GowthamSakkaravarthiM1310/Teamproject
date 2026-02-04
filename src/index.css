@@ -19,7 +19,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Bloody Red and Light Black Theme */
+  background: linear-gradient(135deg, #2b0505 0%, #000000 100%);
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -39,12 +40,12 @@ body {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8.5px);
   -webkit-backdrop-filter: blur(8.5px);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 40px;
   width: 100%;
   max-width: 400px;
@@ -108,7 +109,8 @@ body {
   border-radius: 8px;
   border: none;
   background: #ffffff;
-  color: #764ba2;
+  color: #8a0303;
+  /* Bloody Red */
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
