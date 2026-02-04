@@ -137,3 +137,83 @@ body {
 .footer-text a:hover {
   color: #e0e0e0;
 }
+
+/* Navbar Styles */
+.glass-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8.5px);
+  -webkit-backdrop-filter: blur(8.5px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.signout-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.signout-btn:hover {
+  background: rgba(255, 59, 59, 0.2);
+  border-color: rgba(255, 59, 59, 0.4);
+}
+
+/* Home Page Styles */
+.home-container {
+  width: 100%;
+  min-height: 100vh;
+  padding-top: 80px;
+  /* Space for fixed navbar */
+  box-sizing: border-box;
+}
+
+.content-area {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.welcome-card {
+  max-width: 800px;
+}
