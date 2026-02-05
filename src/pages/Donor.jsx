@@ -50,7 +50,7 @@ const Donor = ({ onDonate }) => {
         if (formData.lastDonationDate) {
             const daysSince = calculateDaysSinceLastDonation(formData.lastDonationDate);
             if (daysSince < 90) {
-                setMessage('You are not eligible to donate now');
+                setMessage('You are not eligible to donate now (Last donation was within 90 days)');
                 setMessageType('error');
                 return;
             }

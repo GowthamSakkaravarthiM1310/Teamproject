@@ -21,6 +21,9 @@ function App() {
     { group: 'O-', units: 0 }
   ]);
 
+  // Requests State
+  const [requests, setRequests] = useState([]);
+
   // Handler for valid donation
   const handleDonate = (donorData) => {
     // We assume a valid donation request adds to the stock (conceptually)
@@ -33,12 +36,27 @@ function App() {
   };
 
   // Handler for blood request
-  const handleRequest = (group, unitsRequested) => {
-    setBloodStock(prevStock => prevStock.map(item =>
-      item.group === group
-        ? { ...item, units: item.units - unitsRequested }
-        : item
-    ));
+  // Handler for blood request
+  const handleRequest = (requestDetails) => {
+    setRequests(prev => [...prev, { ...requestDetails, id: Date.now(), status: 'Pending' }]);
+  };
+
+  // Handler for granting request
+  const handleGrantRequest = (requestId) => {
+    setRequests(prevRequests => {
+      const requestToGrant = prevRequests.find(req => req.id === requestId);
+      if (!requestToGrant) return prevRequests;
+
+      // Decrement stock
+      setBloodStock(prevStock => prevStock.map(item =>
+        item.group === requestToGrant.bloodGroup
+          ? { ...item, units: item.units - requestToGrant.units }
+          : item
+      ));
+
+      // Remove request or mark formatted (here we remove it for simplicity as implied by 'disappears')
+      return prevRequests.filter(req => req.id !== requestId);
+    });
   };
 
   return (
@@ -50,7 +68,7 @@ function App() {
         {/* Donor Page with Donation Logic */}
         <Route path="/donor" element={<Donor onDonate={handleDonate} />} />
         {/* Blood Bank Page with Stock Logic */}
-        <Route path="/blood-bank" element={<BloodBank bloodStock={bloodStock} />} />
+        <Route path="/blood-bank" element={<BloodBank bloodStock={bloodStock} requests={requests} onGrant={handleGrantRequest} />} />
         {/* Request Page with Request Logic */}
         <Route path="/request" element={<Request bloodStock={bloodStock} onRequest={handleRequest} />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
