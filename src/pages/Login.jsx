@@ -8,22 +8,28 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        try {
+            const response = await fetch('http://localhost:8080/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
 
-        if (isAdmin) {
-            if (email === 'admin@gmail.com' && password === '12345678') {
-                localStorage.setItem('userRole', 'admin');
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
+                // navigate('/home', { state: { user: data } }); 
                 navigate('/home');
             } else {
-                setError('Invalid Admin Credentials');
+                alert('Invalid email or password');
             }
-        } else {
-            // Simulated User Login
-            console.log('User Login:', { email, password });
-            localStorage.setItem('userRole', 'user');
-            navigate('/home');
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('Login failed. Please try again.');
         }
     };
 

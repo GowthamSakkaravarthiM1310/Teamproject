@@ -11,14 +11,14 @@ import './App.css';
 function App() {
   // Initial Blood Stock State
   const [bloodStock, setBloodStock] = useState([
-    { group: 'A+', units: 10 },
-    { group: 'A-', units: 5 },
-    { group: 'B+', units: 12 },
-    { group: 'B-', units: 3 }, // Example Low Stock
-    { group: 'AB+', units: 8 },
-    { group: 'AB-', units: 0 }, // Example Out of Stock
-    { group: 'O+', units: 15 },
-    { group: 'O-', units: 4 }
+    { group: 'A+', units: 0 },
+    { group: 'A-', units: 0 },
+    { group: 'B+', units: 0 },
+    { group: 'B-', units: 0 },
+    { group: 'AB+', units: 0 },
+    { group: 'AB-', units: 0 },
+    { group: 'O+', units: 0 },
+    { group: 'O-', units: 0 }
   ]);
 
   // Requests State
