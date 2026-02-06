@@ -9,25 +9,22 @@ import Request from './pages/Request';
 import './App.css';
 
 function App() {
-  // Initial Blood Stock State
+ 
   const [bloodStock, setBloodStock] = useState([
     { group: 'A+', units: 10 },
     { group: 'A-', units: 5 },
     { group: 'B+', units: 12 },
-    { group: 'B-', units: 3 }, // Example Low Stock
+    { group: 'B-', units: 3 }, 
     { group: 'AB+', units: 8 },
-    { group: 'AB-', units: 0 }, // Example Out of Stock
+    { group: 'AB-', units: 0 }, 
     { group: 'O+', units: 15 },
     { group: 'O-', units: 4 }
   ]);
 
-  // Requests State
   const [requests, setRequests] = useState([]);
 
-  // Handler for valid donation
   const handleDonate = (donorData) => {
-    // We assume a valid donation request adds to the stock (conceptually)
-    // or simply registers them. To show connection, let's increment stock.
+    
     setBloodStock(prevStock => prevStock.map(item =>
       item.group === donorData.bloodGroup
         ? { ...item, units: item.units + 1 }
@@ -35,26 +32,21 @@ function App() {
     ));
   };
 
-  // Handler for blood request
-  // Handler for blood request
   const handleRequest = (requestDetails) => {
     setRequests(prev => [...prev, { ...requestDetails, id: Date.now(), status: 'Pending' }]);
   };
 
-  // Handler for granting request
   const handleGrantRequest = (requestId) => {
     setRequests(prevRequests => {
       const requestToGrant = prevRequests.find(req => req.id === requestId);
       if (!requestToGrant) return prevRequests;
 
-      // Decrement stock
       setBloodStock(prevStock => prevStock.map(item =>
         item.group === requestToGrant.bloodGroup
           ? { ...item, units: item.units - requestToGrant.units }
           : item
       ));
 
-      // Remove request or mark formatted (here we remove it for simplicity as implied by 'disappears')
       return prevRequests.filter(req => req.id !== requestId);
     });
   };

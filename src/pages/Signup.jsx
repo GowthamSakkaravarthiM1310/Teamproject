@@ -7,13 +7,26 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Signup attempt:', { name, email, password });
-        // Add actual signup logic here
+    const [error, setError] = useState('');
 
-        // Redirect to login page
-        navigate('/login');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, role: 'user' }) // Name is not in User entity yet, but ignoring for now or should I add it? User entity only has email/password/role.
+            });
+            if (response.ok) {
+                navigate('/login');
+            } else {
+                const data = await response.json();
+                setError(data.message || 'Signup failed');
+            }
+        } catch (err) {
+            setError('Failed to connect to server');
+        }
     };
 
     return (
@@ -21,6 +34,7 @@ const Signup = () => {
             <div className="glass-card">
                 <h2>Create Account</h2>
                 <p className="subtitle">Join us today</p>
+                {error && <div className="error-message" style={{ color: '#ff6b6b', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <label htmlFor="name">Full Name</label>

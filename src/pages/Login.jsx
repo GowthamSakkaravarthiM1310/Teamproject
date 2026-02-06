@@ -8,22 +8,37 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        if (isAdmin) {
-            if (email === 'admin@gmail.com' && password === '12345678') {
-                localStorage.setItem('userRole', 'admin');
-                navigate('/home');
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+
+                if (isAdmin) {
+                    if (user.role === 'admin') {
+                        localStorage.setItem('userRole', 'admin');
+                        navigate('/home');
+                    } else {
+                        setError('Access Denied: Not an admin account');
+                    }
+                } else {
+                    localStorage.setItem('userRole', 'user');
+                    navigate('/home');
+                }
             } else {
-                setError('Invalid Admin Credentials');
+                setError('Invalid Credentials');
             }
-        } else {
-            // Simulated User Login
-            console.log('User Login:', { email, password });
-            localStorage.setItem('userRole', 'user');
-            navigate('/home');
+        } catch (err) {
+            console.error(err);
+            setError('Failed to connect to server');
         }
     };
 
